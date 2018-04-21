@@ -18,7 +18,7 @@ if (isset($_GET['category'])) {
 } else {
     $term_id = 0;
 }
-$list = get_guide_lists_by_category($dest->ID, $guide_term->term_id, 'Sorted IDs'); // we're only returning a sorted list of IDs
+$list = get_guide_lists_by_category($dest->ID, $term_id, 'Sorted IDs'); // we're only returning a sorted list of IDs
 get_template_part( 'templates/parts/destinations-sub-nav.php' );
 ?>
 
@@ -34,12 +34,15 @@ get_template_part( 'templates/parts/destinations-sub-nav.php' );
 
                     <div class="col-md-9 col-md-push-3 col-sm-8 col-sm-push-4">
                         <div class="clearfix">
-                            <h2 class="pull-left page-title travel-dir-category-title"><?php esc_html_e($guide_term->name); ?></h2>
+
+                            <?php if (isset($guide_term)) { ?>
+                                <h2 class="pull-left page-title travel-dir-category-title"><?php esc_html_e($guide_term->name); ?></h2>
+                            <?php } ?>
 
                             <?php
                             if(is_object($post)):
                                 // Ratings Base URL
-                                $rating_sort_url = get_destination_taxonomy_term_links( $guide_term->term_id, $dest->post_name, 'travel-dir-category' );
+                                $rating_sort_url = get_destination_taxonomy_term_links( $term_id, $dest->post_name, 'travel-dir-category' );
                                 $rating = get_guide_lists_rating( $post->ID );
 
                                 $rate = array();
@@ -213,7 +216,7 @@ get_template_part( 'templates/parts/destinations-sub-nav.php' );
                             if (is_array($sub_nav_items['directory']) && !empty($sub_nav_items['directory'])) {
                                 foreach($sub_nav_items['directory'] as $key => $directory):
                                     ?>
-                                    <li <?php echo ($key == $guide_term->term_id)? 'class="active"' : ''; ?>><a href="?category=<?php echo strtolower($directory['name']); ?>"><?php esc_html_e($directory['name']); ?></a></li>
+                                    <li <?php echo (isset($guide_term) && ($key == $term_id))? 'class="active"' : ''; ?>><a href="?category=<?php echo strtolower($directory['name']); ?>"><?php esc_html_e($directory['name']); ?></a></li>
                                     <?php
                                 endforeach;
                             }?>
@@ -222,10 +225,7 @@ get_template_part( 'templates/parts/destinations-sub-nav.php' );
                             <h3><?php _e('Countries', 'framework') ?></h3>
                             <ul class="nav nav-stacked">
                                 <?php while ( $places_query->have_posts() ) : $places_query->the_post(); ?>
-                                    <li <?php echo ($get_the_post_id == $dest->ID)? 'class="active"' : ''; ?>><a href="<?= get_the_permalink(); ?>"><?= $post->post_title; ?></a></li>
-<!--                                    <div class="col-sm-4">-->
-<!--                                        --><?php //get_template_part( 'content', 'place' ); ?>
-<!--                                    </div>-->
+                                    <li <?php echo ($post->ID == $dest->ID)? 'class="active"' : ''; ?>><a href="<?= get_the_permalink(); ?>"><?= $post->post_title; ?></a></li>
                                 <?php endwhile; ?>
                             </ul>
                         <?php } ?>
