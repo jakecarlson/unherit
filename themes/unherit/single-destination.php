@@ -36,9 +36,7 @@ get_header();
 <!--							<div class="entry-content">--><?php //the_content(); ?><!--</div>-->
 <!--						</div>-->
 
-						<?php require_once('single-destination_places.php'); ?>
                          <?php require_once('single-destination_sites.php'); ?>
-                         <?php require_once('single-destination_categories.php'); ?>
                          <?php require_once('single-destination_articles.php'); ?>
 
 					<?php endwhile; // end of the loop. ?>
