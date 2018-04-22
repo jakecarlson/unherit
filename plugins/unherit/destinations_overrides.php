@@ -187,105 +187,21 @@ function get_guide_lists_by_category( $destination_id = 0, $category_id = 0, $re
     return $posts_sorted;
 }
 
-function get_sub_nav_links() {
-    $settings = get_destination_settings();
-    $links = array( 1 => 'information' );
+function destination_sub_navigation( $echo = true, $include_categories = true ) {
+    global $post;
 
-    $settings['menu_order_child'] = isset( $settings['menu_order_child'] ) ? $settings['menu_order_child'] : '';
-    $settings['menu_order_blogs'] = isset( $settings['menu_order_blogs'] ) ? $settings['menu_order_blogs'] : '';
+    $sub_nav_items = array();
+    $sub_nav_links = get_sub_nav_links();
+    $id = get_the_destination_ID();
 
-    $sub_nav_links[$settings['menu_order_child']] = 'places';
-    if( $settings['menu_order_child'] == $settings['menu_order_blogs'] ) {
-        $sub_nav_links[] = 'articles';
-    } else {
-        $sub_nav_links[$settings['menu_order_blogs']] = 'articles';
+    if (isset($id)) {
+        foreach($sub_nav_links as $key => $val) {
+            // Output the menu itmes
+            if (($val != 'directory') || $include_categories) {
+                $sub_nav_items[$val] = output_sub_menu_item( $id, $val, $echo );
+            }
+        }
     }
 
-    $max = (int) max( array_keys( $sub_nav_links ) );
-    for( $i = 1, $j = 1; $i <= $max; $i++ ) {
-        if( !isset( $sub_nav_links[$i] ) && $j <= 2 )
-            $sub_nav_links[$i] = $links[$j++];
-    }
-
-    if( ! in_array( 'information', $sub_nav_links ) )
-        $sub_nav_links[$max+1] = 'information';
-
-    ksort( $sub_nav_links );
-
-    return $sub_nav_links;
+    return apply_filters('destination_sub_navigation', $sub_nav_items);
 }
-
-/*
-function output_sub_menu_item( $id, $item, $echo = true ) {
-    $dest = get_post( $id );
-    $settings = get_destination_settings();
-
-    ob_start();
-    switch ( $item ) {
-        case 'places':
-            $places = get_destinations( $dest->ID );
-            if( count( $places ) && $echo ):
-                // Link URL
-                $places_url = get_destination_taxonomy_term_links( 'places', $dest->post_name );
-                $places_title = ( isset( $settings['menu_title_child'] ) && !empty( $settings['menu_title_child'] ) )? $settings['menu_title_child'] : __( 'Places', 'destinations' );
-                // List Item ?>
-                <li><a href="<?php echo esc_url( trailingslashit($places_url) ); ?>"><?php echo $places_title; ?></a></li>
-            <?php endif;
-            $items = $places;
-            break;
-
-        case 'information':
-            $info_pages = get_destination_pages( $dest->ID );
-            if( count( $info_pages ) && $echo ): ?>
-                <li class="dropdown show-on-hover">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php _e( 'Information', 'destinations' ); ?> <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <?php foreach( $info_pages as $info_page ): ?>
-                            <li><a href="<?php echo esc_url( trailingslashit($info_page['link']) ); ?>"><?php echo $info_page['title']; ?></a></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </li>
-            <?php endif;
-            $items = $info_pages;
-            break;
-
-        case 'directory':
-            $directories = get_guide_lists_directory( $dest->ID );
-            if( count( $directories ) && $echo ):
-
-                // Temp method to get first value as main link.
-                $first = reset( $directories );
-                $directory_url = ( isset($first['link']) ) ? esc_url( $first['link'] ) : '#'; // '#';
-                ?>
-                <li class="dropdown show-on-hover">
-                    <a href="<?php echo esc_url($directory_url); ?>" class="dropdown-toggle" data-toggle="dropdown"><?php _e( 'Directory', 'destinations' ); ?> <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <?php foreach($directories as $key => $directory):
-                            ?>
-                            <li><a href="<?php echo esc_url( trailingslashit($directory['link']) ); ?>"><?php echo $directory['name']; ?></a></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </li>
-            <?php endif;
-            $items = $directories;
-            break;
-
-        case 'articles':
-            $articles = blog_posts_query( $dest->ID );
-            if( isset( $settings['menu_item_blogs'] ) && $settings['menu_item_blogs'] == 'true' && is_object( $articles ) && isset( $articles->posts ) && count( $articles->posts ) && $echo ):
-                $articles_url = get_destination_taxonomy_term_links( 'articles', $dest->post_name );
-                $articles_title = ( isset( $settings['menu_title_blogs'] ) && !empty( $settings['menu_title_blogs'] ) )? $settings['menu_title_blogs'] : __( 'Blog', 'destinations' );
-                ?>
-                <li><a href="<?php echo esc_url( trailingslashit($articles_url) ); ?>"><?php echo $articles_title; ?></a></li>
-            <?php endif;
-            $items = $articles;
-            break;
-    }
-
-    if ( $echo ) {
-        echo ob_get_clean();
-    }
-
-    return $items;
-}
-*/
