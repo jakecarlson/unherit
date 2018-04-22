@@ -26,7 +26,7 @@ function unherit_get_pagination($query = false, $range = 4) {
         if (!$paged){ $paged = 1;}
 
         // To the previous page
-        $prev = get_previous_posts_link('<i class="fa fa-angle-left"></i>');
+        $prev = unherit_get_previous_posts_link('<i class="fa fa-angle-left"></i>');
         if (!empty($prev)) {
             echo '<li class="prev-post">'. $prev .'</li>';
         }
@@ -116,6 +116,7 @@ function unherit_get_previous_posts_link( $label = null ) {
 
 function unherit_get_previous_posts_page_link() {
     global $paged;
+    var_dump($paged);
 
     if ( !is_single() ) {
         $nextpage = intval($paged) - 1;
