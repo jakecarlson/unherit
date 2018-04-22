@@ -106,11 +106,17 @@ get_template_part( 'templates/parts/destinations-sub-nav.php' );
                             // Make sure we have values in the array
                             /* It's important that we do this test. An empty array using 'posts__in' will return ALL post results. */
                             if (is_array($list) && !empty($list)) {
+                                if (!isset($_GET['pagenum'])) {
+                                    $paged = 1;
+                                } else {
+                                    $paged= $_GET['pagenum'];
+                                }
                                 $args = array(
                                     'post_type'      => 'travel-directory',
-                                    'posts_per_page' => 20,
+                                    'posts_per_page' => 10,
                                     'post__in'       => $list,
-                                    'orderby'        => 'post__in'
+                                    'orderby'        => 'post__in',
+                                    'paged'          => $paged
                                 );
                                 $args = is_destination_paged( $args );
                             }
@@ -189,10 +195,7 @@ get_template_part( 'templates/parts/destinations-sub-nav.php' );
 
 
                                 // Paging function
-                                if (function_exists( 'rf_get_pagination' )) :
-                                    rf_get_pagination($the_query);
-                                endif;
-
+                                unherit_get_pagination($the_query);
 
                             } else {
                                 get_template_part( 'no-results', 'travel-dir-category' );

@@ -187,6 +187,34 @@ function get_guide_lists_by_category( $destination_id = 0, $category_id = 0, $re
     return $posts_sorted;
 }
 
+function get_sub_nav_links() {
+    $settings = get_destination_settings();
+    $links = array( 1 => 'information' );
+
+    $settings['menu_order_child'] = isset( $settings['menu_order_child'] ) ? $settings['menu_order_child'] : '';
+    $settings['menu_order_blogs'] = isset( $settings['menu_order_blogs'] ) ? $settings['menu_order_blogs'] : '';
+
+    $sub_nav_links[$settings['menu_order_child']] = 'places';
+    if( $settings['menu_order_child'] == $settings['menu_order_blogs'] ) {
+        $sub_nav_links[] = 'articles';
+    } else {
+        $sub_nav_links[$settings['menu_order_blogs']] = 'articles';
+    }
+
+    $max = (int) max( array_keys( $sub_nav_links ) );
+    for( $i = 1, $j = 1; $i <= $max; $i++ ) {
+        if( !isset( $sub_nav_links[$i] ) && $j <= 2 )
+            $sub_nav_links[$i] = $links[$j++];
+    }
+
+    if( ! in_array( 'information', $sub_nav_links ) )
+        $sub_nav_links[$max+1] = 'information';
+
+    ksort( $sub_nav_links );
+
+    return $sub_nav_links;
+}
+
 /*
 function output_sub_menu_item( $id, $item, $echo = true ) {
     $dest = get_post( $id );
