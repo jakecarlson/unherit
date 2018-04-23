@@ -685,15 +685,15 @@ if( ! class_exists( 'Travel_Directory_CPT' ) ) {
             echo '</select>';
 
             echo '<h3 style="padding-left:0px;">' . __( 'Directory Type', 'destinations' ) . '</h3>';
-            echo '<select name="category_id[]" class="widefat" multiple>';
+//            echo '<select name="category_id[]" class="widefat" multiple>';
             if ( ! empty( $categories ) ) {
-                printf( '<option value="%s">%s</option>', '0', __( '(no type)' ) );
+//                printf( '<option value="%s">%s</option>', '0', __( '(no type)' ) );
                 foreach ( $categories as $category ) {
-                    $selected = in_array($category->term_id, $category_selected_id) ? 'selected' : false;
-                    printf( '<option value="%s"%s>%s</option>', esc_attr( $category->term_id ), $selected, esc_html( $category->name ) );
+                    $checked = in_array($category->term_id, $category_selected_id) ? 'checked' : false;
+                    printf( '<label><input type="checkbox" name="category_id[]" value="%s"%s> %s</label><br>', esc_attr( $category->term_id ), $checked, esc_html( $category->name ) );
                 }
             }
-            echo '</select>';
+//            echo '</select>';
 
             $rating['star']  = ( isset( $rating['rating_types_star'] ) && ! empty( $rating['rating_types_star'] ) ) ? $rating['rating_types_star'] : '';
             $rating['price'] = ( isset( $rating['rating_types_price'] ) && ! empty( $rating['rating_types_price'] ) ) ? $rating['rating_types_price'] : '';
