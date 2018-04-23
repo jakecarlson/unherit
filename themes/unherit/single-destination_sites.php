@@ -146,7 +146,21 @@ get_template_part( 'templates/parts/destinations-sub-nav.php' );
                                                     ?></p>
                                             </div>
                                             <div class="media-details">
-                                                <ul class="list-inline">
+                                                <ul class="list-inline pull-left">
+                                                    <?php if (unherit_in_category('visited')) { ?>
+                                                        <li><i class="fa fa-fw fa-check-square-o" title="<?php _e('Visited', 'framework') ?>"></i></li>
+                                                    <?php } ?>
+                                                    <?php if (unherit_in_category('endangered')) { ?>
+                                                        <li><i class="fa fa-fw fa-warning" title="<?php _e('Endangered', 'framework') ?>"></i></li>
+                                                    <?php } ?>
+                                                    <?php if (unherit_in_category('cultural')) { ?>
+                                                        <li><i class="fa fa-fw fa-university" title="<?php _e('Cultural', 'framework') ?>"></i></li>
+                                                    <?php } ?>
+                                                    <?php if (unherit_in_category('natural')) { ?>
+                                                        <li><i class="fa fa-fw fa-leaf" title="<?php _e('Natural', 'framework') ?>"></i></li>
+                                                    <?php } ?>
+                                                </ul>
+                                                <ul class="list-inline pull-right">
                                                     <?php $ratings = get_guide_lists_rating( $item->ID ); ?>
                                                     <li class="destination"><i class="fa fa-map-marker fa-fw"></i> <span><?php echo get_the_title(get_guide_page_parent($item->ID)); ?></span></li>
                                                     <?php

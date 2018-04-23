@@ -116,8 +116,6 @@ function unherit_get_previous_posts_link( $label = null ) {
 
 function unherit_get_previous_posts_page_link() {
     global $paged;
-    var_dump($paged);
-
     if ( !is_single() ) {
         $nextpage = intval($paged) - 1;
         if ( $nextpage < 1 )
@@ -164,4 +162,9 @@ function unherit_get_next_posts_page_link($max_page = 0) {
         if ( !$max_page || $max_page >= $nextpage )
             return unherit_get_pagenum_link($nextpage);
     }
+}
+
+function unherit_in_category($category) {
+    global $post;
+    return has_term($category, 'travel-dir-category');
 }

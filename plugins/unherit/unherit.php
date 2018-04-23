@@ -55,4 +55,5 @@ function unherit_load_scripts_and_styles() {
 }
 
 // Include Destinations plugin overrides
+require_once('directory.php');
 require_once('destinations_overrides.php');
