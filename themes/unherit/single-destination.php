@@ -27,14 +27,8 @@ get_header();
 					<div class="col-sm-12">
 					<?php
 
-
 					// Start the WP loop
 					while ( have_posts() ) : the_post(); ?>
-
-<!--						<div class="intro">-->
-<!--							<p class="lead">--><?php //echo get_destination_intro(); ?><!--</p>-->
-<!--							<div class="entry-content">--><?php //the_content(); ?><!--</div>-->
-<!--						</div>-->
 
                          <?php require_once('single-destination_sites.php'); ?>
                          <?php require_once('single-destination_articles.php'); ?>
