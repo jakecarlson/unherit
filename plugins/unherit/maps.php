@@ -171,7 +171,9 @@ if( ! class_exists( 'Destination_Maps' ) ) {
                         )
                     )
                 );
-                add_directory_category_constraint($args, $_GET['category']);
+                if (isset($_GET['category'])) {
+                    add_directory_category_constraint($args, $_GET['category']);
+                }
                 $items = get_posts($args);
                 foreach($items as $item) {
                     $all[$item->ID] = get_directory_gmaps_options( $item->ID );
@@ -188,7 +190,9 @@ if( ! class_exists( 'Destination_Maps' ) ) {
                             )
                         )
                     );
-                    add_directory_category_constraint($args, $_GET['category']);
+                    if (isset($_GET['category'])) {
+                        add_directory_category_constraint($args, $_GET['category']);
+                    }
                     $items = get_posts( $args );
                     foreach( $items as $item ) {
                         $all[$item->ID] = get_directory_gmaps_options( $item->ID );
