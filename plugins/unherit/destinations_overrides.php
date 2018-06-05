@@ -147,7 +147,9 @@ function get_guide_lists_by_category( $destination_id = 0, $category_id = 0, $re
         ),
 
     );
-    add_directory_category_constraint($args, $category_id);
+    if ($category_id !== 0) {
+        add_directory_category_constraint($args, $category_id);
+    }
 
     $lists = get_posts( $args );
 

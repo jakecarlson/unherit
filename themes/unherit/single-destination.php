@@ -20,7 +20,6 @@ get_header();
 
 		<!-- Main Section
 		================================================== -->
-single-destination
         <section class="main">
 			<div class="container">
 				<div class="row">
