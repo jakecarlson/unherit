@@ -34,7 +34,7 @@ if( /*isset($settings['menu_item_blogs']) && $settings['menu_item_blogs'] == 'tr
                     endwhile;
 
                 } else {
-                    get_template_part( 'no-results', 'destination-blog' );
+//                    get_template_part( 'no-results', 'destination-blog' );
                 }
 
                 /* Restore original Post Data */
