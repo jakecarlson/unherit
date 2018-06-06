@@ -18,11 +18,8 @@ if (isset($_GET['category'])) {
 } else {
     $term_id = 0;
 }
-var_dump($dest->ID);
-var_dump($term_id);
 $list = get_guide_lists_by_category($dest->ID, $term_id, 'Sorted IDs'); // we're only returning a sorted list of IDs
 get_template_part( 'templates/parts/destinations-sub-nav.php' );
-var_dump(count($list));
 ?>
 
 <!-- Main Section
