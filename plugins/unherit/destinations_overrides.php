@@ -190,7 +190,7 @@ function destination_sub_navigation( $echo = true, $include_categories = true ) 
 
     if (isset($id)) {
         foreach($sub_nav_links as $key => $val) {
-            // Output the menu itmes
+            // Output the menu items
             if (($val != 'directory') || $include_categories) {
                 $sub_nav_items[$val] = output_sub_menu_item( $id, $val, $echo );
             }
