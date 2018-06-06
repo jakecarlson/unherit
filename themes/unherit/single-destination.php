@@ -16,29 +16,29 @@ $sub_nav_items = destination_sub_navigation( false ); // only return
 
 get_header(); 
 
-		get_template_part( 'templates/parts/destinations-sub-nav' ); ?>
+get_template_part( 'templates/parts/destinations-sub-nav' ); ?>
 
-		<!-- Main Section
-		================================================== -->
-        <section class="main">
-			<div class="container">
-				<div class="row">
+<!-- Main Section
+================================================== -->
+<section class="main">
+    <div class="container">
+        <div class="row">
 
-					<div class="col-sm-12">
-					<?php
+            <div class="col-sm-12">
+            <?php
 
-					// Start the WP loop
-					while ( have_posts() ) : the_post(); ?>
+            // Start the WP loop
+            while ( have_posts() ) : the_post(); ?>
 
-                         <?php require_once('single-destination_sites.php'); ?>
-                         <?php require_once('single-destination_articles.php'); ?>
+                 <?php require_once('single-destination_sites.php'); ?>
+                 <?php require_once('single-destination_articles.php'); ?>
 
-					<?php endwhile; // end of the loop. ?>
+            <?php endwhile; // end of the loop. ?>
 
-					</div>
+            </div>
 
-				</div><!-- /.row -->
-			</div>
-		</section>
+        </div><!-- /.row -->
+    </div>
+</section>
 
 <?php get_footer(); ?>
