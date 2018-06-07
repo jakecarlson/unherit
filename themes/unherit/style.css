@@ -12,14 +12,15 @@
  Text Domain:  unherit
 */
 
+
 .sub-nav .navbar-left li:first-child {
     display: none;
 }
-
+/*
 .sub-nav .navbar-right {
     display: none;
 }
-
+*/
 .sub-nav a {
     color: #444649;
 }
