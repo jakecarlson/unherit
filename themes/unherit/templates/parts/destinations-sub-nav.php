@@ -13,7 +13,7 @@
             <div class="navbar-header">
                 <div class="navbar-brand">
                     <i class="fa fa-fw fa-map-marker"></i>
-                    <a href="<?= get_home_url(); ?>"><?php _e('Home', 'framework' ) ?></a>
+                    <a href="<?= get_home_url(); ?>"><?php _e('World', 'framework' ) ?></a>
                     <i class="fa fa-fw fa-angle-right"></i>
                     <?php if ($parent = get_the_destination_post()->post_parent) { ?>
                         <a href="<?= get_the_permalink($parent); ?>"><?= get_the_title($parent); ?></a>

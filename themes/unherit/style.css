@@ -20,6 +20,10 @@
     display: none;
 }
 
+.sub-nav a {
+    color: #444649;
+}
+
 .whs-source {
     font-size: .75em;
 }
