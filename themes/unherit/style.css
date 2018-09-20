@@ -13,7 +13,7 @@
 */
 
 
-.sub-nav .navbar-left li:first-child {
+.sub-nav .navbar-left > li {
     display: none;
 }
 /*

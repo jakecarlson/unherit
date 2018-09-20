@@ -10,11 +10,24 @@
         endforeach;
     }?>
 </ul>
+
 <?php if ( $places_query->have_posts() ) { ?>
     <h3><?php _e('Countries', 'framework') ?></h3>
     <ul class="nav nav-stacked">
         <?php while ( $places_query->have_posts() ) : $places_query->the_post(); ?>
             <li <?php echo ($post->ID == $dest->ID)? 'class="active"' : ''; ?>><a href="<?= get_the_permalink(); ?>"><?= $post->post_title; ?></a></li>
         <?php endwhile; ?>
+    </ul>
+<?php } else if (!empty($sub_nav_items['information'])) { ?>
+    <h3><?php _e('Itineraries', 'framework') ?></h3>
+    <ul class="nav nav-stacked">
+        <?php
+        if (is_array($sub_nav_items['information']) && !empty($sub_nav_items['information'])) {
+            foreach($sub_nav_items['information'] as $key => $itinerary):
+                ?>
+                <li><a href="<?= $itinerary['link']; ?>"><?php esc_html_e($itinerary['title']); ?></a></li>
+                <?php
+            endforeach;
+        }?>
     </ul>
 <?php } ?>

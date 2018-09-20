@@ -32,7 +32,7 @@
 
             <nav class="navbar-collapse collapse" id="navbar-sub">
                 <ul class="nav navbar-nav navbar-left">
-                    <?php destination_sub_navigation(true, false); ?>
+                    <?php //destination_sub_navigation(true, false); ?>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <!-- <li><a href="#"><i class="fa fa-fw fa-location-arrow"></i> Map</a></li> -->
