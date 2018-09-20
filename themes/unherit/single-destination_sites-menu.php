@@ -18,7 +18,9 @@
             <li <?php echo ($post->ID == $dest->ID)? 'class="active"' : ''; ?>><a href="<?= get_the_permalink(); ?>"><?= $post->post_title; ?></a></li>
         <?php endwhile; ?>
     </ul>
-<?php } else if (!empty($sub_nav_items['information'])) { ?>
+<?php } ?>
+
+<?php if (!empty($sub_nav_items['information'])) { ?>
     <h3><?php _e('Itineraries', 'framework') ?></h3>
     <ul class="nav nav-stacked">
         <?php
