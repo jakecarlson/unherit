@@ -68,17 +68,16 @@ if ( $the_query->have_posts() ) {
                                 $rating_value = array_key_exists( 'rating_types_' . $key, $ratings ) ? $ratings['rating_types_'.$key] : '';
                                 ?>
                                 <li>
-                                                                    <span class="rating rating-<?php echo $key; ?>">
-                                                                        <div class="ratebox" data-id="<?php echo $key; ?>" data-rating=""></div>
-                                                                        <input type="hidden" name="rating-types_<?php echo $key; ?>" id="rating-<?php echo $key; ?>" value="<?php echo $rating_value; ?>" />
-                                                                        <input type="hidden" class="rate-class"  value="<?php echo $rate['class']; ?>" />
-                                                                        <input type="hidden" class="rate-color"  value="<?php echo $rate['color']; ?>" />
-                                                                    </span>
+                                    <span class="rating rating-<?php echo $key; ?>">
+                                        <div class="ratebox" data-id="<?php echo $key; ?>" data-rating=""></div>
+                                        <input type="hidden" name="rating-types_<?php echo $key; ?>" id="rating-<?php echo $key; ?>" value="<?php echo $rating_value; ?>" />
+                                        <input type="hidden" class="rate-class"  value="<?php echo $rate['class']; ?>" />
+                                        <input type="hidden" class="rate-color"  value="<?php echo $rate['color']; ?>" />
+                                    </span>
                                 </li>
                             <?php endif;
-                        }?>
-
-
+                        }
+                        ?>
                         <input type="hidden" class="rating-is-front" value="true" />
                     </ul>
                 </div>

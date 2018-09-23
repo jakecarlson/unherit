@@ -5,7 +5,6 @@ function unherit_get_pagination($query = false, $range = 4) {
     // $paged - number of the current page
     global $paged, $wp_query, $portfolio_query, $postIndex;
 
-
     // set the query variable (default $wp_query)
     $q = ($query) ? $query : $wp_query;
 
@@ -168,3 +167,28 @@ function unherit_in_category($category) {
     global $post;
     return has_term($category, 'travel-dir-category');
 }
+
+function unherit_create_temp_title($fields) {
+  global $wpdb;
+  $matches = 'A|An|The';
+  $has_article = " CASE 
+      WHEN $wpdb->posts.post_title regexp( '^($matches)[[:space:]]' )
+        THEN trim(substr($wpdb->posts.post_title from 4)) 
+      ELSE $wpdb->posts.post_title 
+        END AS title2";
+  if ($has_article) {
+    $fields .= ( preg_match( '/^(\s+)?,/', $has_article ) ) ? $has_article : ", $has_article";
+  }
+  return $fields;
+}
+
+function unherit_sort_by_title($orderby) {
+  $custom_orderby = " UPPER(title2) ASC";
+  if ($custom_orderby) {
+    $orderby = $custom_orderby;
+  }
+  return $orderby;
+}
+
+add_filter('posts_fields', 'unherit_create_temp_title');
+add_action('posts_orderby', 'unherit_sort_by_title');
