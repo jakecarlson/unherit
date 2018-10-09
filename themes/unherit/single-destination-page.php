@@ -43,7 +43,14 @@ require_once('single-destination_setup.php');
 									</p><!-- .entry-thumbnail -->
 									<?php
 								endif; // has_post_thumbnail ?>
-								<div class="entry-content"><?php the_content(); ?></div>
+								<div class="entry-content">
+									<?php the_content(); ?>
+									<?php 
+									if (function_exists("get_yuzo_related_posts")) { 
+										get_yuzo_related_posts(); 
+									} 
+									?>
+								</div>
 							
 				            </article> <!-- /.guide-list -->
 
