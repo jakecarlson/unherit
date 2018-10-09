@@ -38,7 +38,7 @@ $list = get_guide_lists_by_category($dest->ID, $term_id, 'Sorted IDs'); // we're
                     </div><!-- /.page-content -->
 
                     <div class="col-md-3 col-md-pull-9 col-sm-4 col-sm-pull-8 page-navigation">
-                        <?php require_once('single-destination_menu.php'); ?>
+                        <?php require_once('single-destination_menu-left.php'); ?>
                     </div><!-- /.page-navigation -->
 
                 </div>
@@ -46,7 +46,7 @@ $list = get_guide_lists_by_category($dest->ID, $term_id, 'Sorted IDs'); // we're
             </div>
 
             <div class="col-md-3 col-sm-12">
-                <?php get_sidebar(); ?>
+                <?php require_once('single-destination_menu-right.php'); ?>
             </div><!-- /sidebar -->
 
         </div>
