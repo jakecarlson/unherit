@@ -28,3 +28,26 @@
 .whs-source {
     font-size: .75em;
 }
+
+ul.nav-stacked {
+	border-right: none;
+}
+
+.unherit-menu-sites > li {
+	margin-top: 0 !important;
+	clear: both;
+}
+.unherit-menu-sites > li:last-child {
+	border-bottom: none;
+}
+.unherit-menu-sites > li a {
+	display: block;
+}
+.unherit-menu-sites > li a .media-details {
+	margin-top: .25em;
+}
+.unherit-menu-sites > li a:after {
+  content: "";
+  display: table;
+  clear: both;
+}

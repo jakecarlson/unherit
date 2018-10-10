@@ -163,9 +163,14 @@ function unherit_get_next_posts_page_link($max_page = 0) {
     }
 }
 
-function unherit_in_category($category) {
+function unherit_in_category($category, $post_id = false) {
     global $post;
-    return has_term($category, 'travel-dir-category');
+    if ($post_id) {
+        $tmp_post = get_post($post_id);
+    } else {
+        $tmp_post = $post;
+    }
+    return has_term($category, 'travel-dir-category', $tmp_post);
 }
 
 function unherit_create_temp_title($fields) {
@@ -192,3 +197,46 @@ function unherit_sort_by_title($orderby) {
 
 add_filter('posts_fields', 'unherit_create_temp_title');
 add_action('posts_orderby', 'unherit_sort_by_title');
+
+function unherit_output_site_meta($post_id = null, $show_rating = false) { ?>
+    <div class="media-details">
+        <ul class="list-inline pull-left">
+            <?php if (unherit_in_category('visited', $post_id)) { ?>
+                <li><i class="fa fa-fw fa-check-square-o" title="<?php _e('Visited', 'framework') ?>"></i></li>
+            <?php } ?>
+            <?php if (unherit_in_category('endangered', $post_id)) { ?>
+                <li><i class="fa fa-fw fa-warning" title="<?php _e('Endangered', 'framework') ?>"></i></li>
+            <?php } ?>
+            <?php if (unherit_in_category('cultural', $post_id)) { ?>
+                <li><i class="fa fa-fw fa-university" title="<?php _e('Cultural', 'framework') ?>"></i></li>
+            <?php } ?>
+            <?php if (unherit_in_category('natural', $post_id)) { ?>
+                <li><i class="fa fa-fw fa-leaf" title="<?php _e('Natural', 'framework') ?>"></i></li>
+            <?php } ?>
+        </ul>
+        <ul class="list-inline pull-right">
+            <li class="destination"><i class="fa fa-map-marker fa-fw"></i> <span><?php echo get_the_title(get_guide_page_parent($post_id)); ?></span></li>
+            <?php if ($show_rating) { ?>
+                <?php $ratings = get_guide_lists_rating($post_id); ?>
+                <?php
+                foreach( $ratings['settings'] as $key => $rate) {
+                    if(isset($rating['enabled']['rating_types_'.$key]) && $ratings['enabled']['rating_types_'.$key] == 'true'):
+                        $rating_value = array_key_exists('rating_types_' . $key, $ratings) ? $ratings['rating_types_'.$key] : '';
+                        ?>
+                        <li>
+                            <span class="rating rating-<?php echo $key; ?>">
+                                <div class="ratebox" data-id="<?php echo $key; ?>" data-rating=""></div>
+                                <input type="hidden" name="rating-types_<?php echo $key; ?>" id="rating-<?php echo $key; ?>" value="<?php echo $rating_value; ?>" />
+                                <input type="hidden" class="rate-class"  value="<?php echo $rate['class']; ?>" />
+                                <input type="hidden" class="rate-color"  value="<?php echo $rate['color']; ?>" />
+                            </span>
+                        </li>
+                    <?php endif;
+                }
+                ?>
+                <input type="hidden" class="rating-is-front" value="true" />
+            <?php } ?>
+        </ul>
+    </div>
+<?php
+}

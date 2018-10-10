@@ -43,44 +43,7 @@ if ( $the_query->have_posts() ) {
                         echo dest_get_words( $excerpt, 25);
                         ?></p>
                 </div>
-                <div class="media-details">
-                    <ul class="list-inline pull-left">
-                        <?php if (unherit_in_category('visited')) { ?>
-                            <li><i class="fa fa-fw fa-check-square-o" title="<?php _e('Visited', 'framework') ?>"></i></li>
-                        <?php } ?>
-                        <?php if (unherit_in_category('endangered')) { ?>
-                            <li><i class="fa fa-fw fa-warning" title="<?php _e('Endangered', 'framework') ?>"></i></li>
-                        <?php } ?>
-                        <?php if (unherit_in_category('cultural')) { ?>
-                            <li><i class="fa fa-fw fa-university" title="<?php _e('Cultural', 'framework') ?>"></i></li>
-                        <?php } ?>
-                        <?php if (unherit_in_category('natural')) { ?>
-                            <li><i class="fa fa-fw fa-leaf" title="<?php _e('Natural', 'framework') ?>"></i></li>
-                        <?php } ?>
-                    </ul>
-                    <ul class="list-inline pull-right">
-                        <?php $ratings = get_guide_lists_rating( $item->ID ); ?>
-                        <li class="destination"><i class="fa fa-map-marker fa-fw"></i> <span><?php echo get_the_title(get_guide_page_parent($item->ID)); ?></span></li>
-                        <?php
-                        foreach( $ratings['settings'] as $key => $rate) {
-                            //$idx = str_replace('rating_types_', '', $key);
-                            if(isset($rating['enabled']['rating_types_'.$key]) && $ratings['enabled']['rating_types_'.$key] == 'true'):
-                                $rating_value = array_key_exists( 'rating_types_' . $key, $ratings ) ? $ratings['rating_types_'.$key] : '';
-                                ?>
-                                <li>
-                                    <span class="rating rating-<?php echo $key; ?>">
-                                        <div class="ratebox" data-id="<?php echo $key; ?>" data-rating=""></div>
-                                        <input type="hidden" name="rating-types_<?php echo $key; ?>" id="rating-<?php echo $key; ?>" value="<?php echo $rating_value; ?>" />
-                                        <input type="hidden" class="rate-class"  value="<?php echo $rate['class']; ?>" />
-                                        <input type="hidden" class="rate-color"  value="<?php echo $rate['color']; ?>" />
-                                    </span>
-                                </li>
-                            <?php endif;
-                        }
-                        ?>
-                        <input type="hidden" class="rating-is-front" value="true" />
-                    </ul>
-                </div>
+                <?php unherit_output_site_meta($post->ID, true); ?>
             </div>
 
             <div class="media-right media-top">
