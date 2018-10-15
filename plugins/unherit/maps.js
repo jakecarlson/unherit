@@ -36,7 +36,7 @@ function initializeDestinationMaps() {
 	// Add markers and info boxes
 	jQuery.each(markers, function( index, value ) {
 
-		pinIcon = (index == pin_current_dest) ? pin_current_dest_img : destination_map_options.path+'/'+value.pin_img;
+		pinIcon = destination_map_options.path+'/'+value.pin_img;
 
 		used_markers[index] = new google.maps.Marker({
 			map: map,
@@ -47,11 +47,11 @@ function initializeDestinationMaps() {
 
 		used_markers[index].destInfoBoxID = index; // set the infobox ID
 
-		if(index == pin_directory_item) {
-			loadInfoBox(used_markers[index], true);
-		} else if(index == pin_current_dest) {
-			loadInfoBox(used_markers[index], false);
-		}
+		// if(index == pin_directory_item) {
+		// 	loadInfoBox(used_markers[index], true);
+		// } else if(index == pin_current_dest) {
+		// 	loadInfoBox(used_markers[index], false);
+		// }
 
 		// Assign click behavior to show infoBox
 		if (destination_map_options.info_on_click) {

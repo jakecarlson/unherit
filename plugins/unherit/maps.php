@@ -153,54 +153,37 @@ if( ! class_exists( 'Destination_Maps' ) ) {
 
             $use_generated_pins = array();
             if( $attrs['show_child_pins'] ) {
-                $children = get_children( $this->dest_id );
+                $children = get_children($this->dest_id);
                 foreach( $children as $child ) {
-                    $all[$child->ID] = get_destination_gmaps_options( $child->ID );
-                    $all = get_children_destination_gmaps_options( $child->ID, $all );
+                    $all[$child->ID] = get_destination_gmaps_options($child->ID);
+                    $all = get_children_destination_gmaps_options($child->ID, $all);
                 }
             }
 
             if( $attrs['show_directory_pins'] ) {
-                $args = array(
-                    'post_type'     =>  'travel-directory',
-                    'posts_per_page'=>  -1,
-                    'meta_query'    =>  array(
-                        array(
-                            'key'   =>  'destination_parent_id',
-                            'value' =>  $this->dest_id
-                        )
-                    )
-                );
-                if (isset($_GET['category'])) {
-                    add_directory_category_constraint($args, $_GET['category']);
-                }
-                $items = get_posts($args);
-                foreach($items as $item) {
-                    $all[$item->ID] = get_directory_gmaps_options( $item->ID );
-                }
-                $children = get_children( $this->dest_id );
-                foreach( $children as $child ) {
-                    $args = array(
-                        'post_type' => 'travel-directory',
-                        'posts_per_page' => -1,
-                        'meta_query' => array(
-                            array(
-                                'key' => 'destination_parent_id',
-                                'value' => $child->ID
-                            )
-                        )
-                    );
-                    if (isset($_GET['category'])) {
-                        add_directory_category_constraint($args, $_GET['category']);
-                    }
-                    $items = get_posts( $args );
-                    foreach( $items as $item ) {
-                        $all[$item->ID] = get_directory_gmaps_options( $item->ID );
-                    }
-                    $all = get_children_directory_gmaps_options( $child->ID, $all );
-                }
-
+                $all = array_merge($all, unherit_get_map_pins($this->dest_id));
             }
+
+            
+            // var_dump($attrs['zoom']);
+            $midpoint = unherit_get_coords_midpoint($all);
+            $page_lat = $midpoint['latitude'];
+            $page_long = $midpoint['longitude'];
+            // var_dump($midpoint);
+            
+            $distance = unherit_get_coords_distance($all);
+            // var_dump($distance);
+            
+            $zooms = [270, 180, 120, 90, 45, 30, 0];
+            $zoom = 8;
+            for ($i = 0, $numZooms = count($zooms); $i < $numZooms; ++$i) {
+                if ($distance > $zooms[$i]) {
+                    $page_custom_zoom = $i;
+                    // echo "{$distance} > {$zooms[$i]}<br>";
+                    break;
+                }
+            }
+            // echo "{$zoom}<br>";
 
             $this->content = '';
             foreach( $all as $key => $item ) {
@@ -209,7 +192,6 @@ if( ! class_exists( 'Destination_Maps' ) ) {
                     unset( $item['image'] );
                     $use_generated_pins[$key] = $item;
                 }
-
             }
 
             $generated_pins =  apply_filters( 'destination_map/generated_pins', $use_generated_pins );
@@ -240,4 +222,5 @@ if( ! class_exists( 'Destination_Maps' ) ) {
 
         }
     }
+
 }

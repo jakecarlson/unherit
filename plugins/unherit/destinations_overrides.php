@@ -204,3 +204,142 @@ function destination_sub_navigation( $echo = true, $include_categories = true ) 
 
     return apply_filters('destination_sub_navigation', $sub_nav_items);
 }
+
+function unherit_get_map_pins($destination_id) {
+
+    $base_args = [
+        'post_type' => 'travel-directory',
+        'posts_per_page' => -1,
+    ];
+
+    if (unherit_post_is_itinerary()) {
+        
+        $sites = CustomRelatedPosts::get()->relations_to(get_the_ID());
+        $args = array_merge(
+            $base_args, 
+            [
+                'include' => array_column($sites, 'id'),
+                'post__in' => array_column($sites, 'id'),
+            ]
+        );
+
+        $all = unherit_query_map_posts($args);
+
+    } else {
+        
+        $args = array_merge(
+            $base_args,
+            [
+                'meta_query' => [
+                    [
+                        'key' => 'destination_parent_id',
+                        'value' => $destination_id,
+                    ],
+                ]
+            ]
+        );
+
+        $all = unherit_query_map_posts($args);
+
+        $children = get_children($destination_id);
+        foreach($children as $child) {
+            
+            $args = array_merge(
+                $base_args,
+                [
+                    'meta_query' => [
+                        [
+                            'key' => 'destination_parent_id',
+                            'value' => $child->ID,
+                        ],
+                    ]
+                ]
+            );
+
+            $all = array_merge($all, unherit_query_map_posts($args));
+            $all = get_children_directory_gmaps_options($child->ID, $all);
+
+        }
+
+    }
+
+    return $all;
+
+}
+
+function unherit_query_map_posts($args) {
+    if (isset($_GET['category'])) {
+        add_directory_category_constraint($args, $_GET['category']);
+    }
+    $items = get_posts($args);
+    $pins = [];
+    foreach($items as $item) {
+        $pins[$item->ID] = get_directory_gmaps_options($item->ID);
+    }
+    return $pins;
+}
+
+function unherit_post_is_itinerary() {
+    return get_post_type() == 'destination-page';
+}
+
+function unherit_get_coords_midpoint($data)
+{
+    if (!is_array($data)) return FALSE;
+
+    $num_coords = count($data);
+
+    $X = 0.0;
+    $Y = 0.0;
+    $Z = 0.0;
+
+    foreach ($data as $coord)
+    {
+        $lat = $coord['latitude'] * pi() / 180;
+        $lon = $coord['longitude'] * pi() / 180;
+
+        $a = cos($lat) * cos($lon);
+        $b = cos($lat) * sin($lon);
+        $c = sin($lat);
+
+        $X += $a;
+        $Y += $b;
+        $Z += $c;
+    }
+
+    $X /= $num_coords;
+    $Y /= $num_coords;
+    $Z /= $num_coords;
+
+    $lon = atan2($Y, $X);
+    $hyp = sqrt($X * $X + $Y * $Y);
+    $lat = atan2($Z, $hyp);
+
+    return [
+        'latitude' => $lat * 180 / pi(), 
+        'longitude' => $lon * 180 / pi(),
+    ];
+}
+
+
+function unherit_get_coords_distance($coords) {
+    
+    $lats = array_column($coords, 'latitude');
+    $lons = array_column($coords, 'longitude');
+
+    $lat_min = min($lats);
+    $lat_max = max($lats);
+    $lon_min = min($lons);
+    $lon_max = max($lons);
+
+    // echo "Lat: {$lat_min}, {$lat_max}<br>";
+    // echo "Lon: {$lon_min}, {$lon_max}<br>";
+    
+    $theta = $lon_max - $lon_min;
+    $dist = sin(deg2rad($lat_max)) * sin(deg2rad($lat_min)) +  cos(deg2rad($lat_max)) * cos(deg2rad($lat_min)) * cos(deg2rad($theta));
+    $dist = acos($dist);
+    $dist = rad2deg($dist);
+
+    return $dist;
+
+}
