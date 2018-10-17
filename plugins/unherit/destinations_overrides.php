@@ -205,16 +205,20 @@ function destination_sub_navigation( $echo = true, $include_categories = true ) 
     return apply_filters('destination_sub_navigation', $sub_nav_items);
 }
 
-function unherit_get_map_pins($destination_id) {
+function unherit_get_map_pins($post_id = null) {
+
+    if (is_null($post_id)) {
+        $post_id = get_the_ID();
+    }
 
     $base_args = [
         'post_type' => 'travel-directory',
         'posts_per_page' => -1,
     ];
 
-    if (unherit_post_is_itinerary()) {
+    if (unherit_post_is_itinerary($post_id)) {
         
-        $sites = CustomRelatedPosts::get()->relations_to(get_the_ID());
+        $sites = CustomRelatedPosts::get()->relations_to($post_id);
         $args = array_merge(
             $base_args, 
             [
@@ -233,7 +237,7 @@ function unherit_get_map_pins($destination_id) {
                 'meta_query' => [
                     [
                         'key' => 'destination_parent_id',
-                        'value' => $destination_id,
+                        'value' => $post_id,
                     ],
                 ]
             ]
@@ -241,7 +245,7 @@ function unherit_get_map_pins($destination_id) {
 
         $all = unherit_query_map_posts($args);
 
-        $children = get_children($destination_id);
+        $children = get_children($post_id);
         foreach($children as $child) {
             
             $args = array_merge(
@@ -279,8 +283,8 @@ function unherit_query_map_posts($args) {
     return $pins;
 }
 
-function unherit_post_is_itinerary() {
-    return get_post_type() == 'destination-page';
+function unherit_post_is_itinerary($post_id = null) {
+    return (get_post_type($post_id) == 'destination-page');
 }
 
 function unherit_get_coords_midpoint($data)
@@ -321,6 +325,18 @@ function unherit_get_coords_midpoint($data)
     ];
 }
 
+function unherit_get_map_zoom($coords) {
+    $distance = unherit_get_coords_distance($coords);
+    $zooms = [270, 180, 120, 90, 45, 30, 0];
+    $zoom = 8;
+    for ($i = 0, $numZooms = count($zooms); $i < $numZooms; ++$i) {
+        if ($distance > $zooms[$i]) {
+            $zoom = $i;
+            break;
+        }
+    }
+    return $zoom;
+}
 
 function unherit_get_coords_distance($coords) {
     

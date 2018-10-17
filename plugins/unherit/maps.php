@@ -138,6 +138,21 @@ if( ! class_exists( 'Destination_Maps' ) ) {
             $zoom_control 		   = ( isset( $this->settings['zoom_control'] ) && $this->settings['zoom_control'] == 'true' ) ? true : false;
             $zoom_scrollwheel	   = ( isset( $this->settings['zoom_scrollwheel'] ) && $this->settings['zoom_scrollwheel'] == 'true' ) ? true : false;
 
+            if (unherit_post_is_itinerary()) {
+                $options = get_destination_options(get_the_ID());
+                if (isset($options['google_map'])) {
+                    if (isset($options['google_map']['latitude']) && !empty($options['google_map']['latitude'])) {
+                        $page_lat = $options['google_map']['latitude'];
+                    }
+                    if (isset($options['google_map']['longitude']) && !empty($options['google_map']['longitude'])) {
+                        $page_long = $options['google_map']['longitude'];
+                    }
+                    if (isset($options['google_map']['zoom']) && !empty($options['google_map']['zoom'])) {
+                        $page_custom_zoom = $options['google_map']['zoom'];
+                    }
+                }
+            }
+
             $all = array();
 
             $this->pin_current_destination = 0;
@@ -161,29 +176,8 @@ if( ! class_exists( 'Destination_Maps' ) ) {
             }
 
             if( $attrs['show_directory_pins'] ) {
-                $all = array_merge($all, unherit_get_map_pins($this->dest_id));
+                $all = array_merge($all, unherit_get_map_pins(get_the_ID()));
             }
-
-            
-            // var_dump($attrs['zoom']);
-            $midpoint = unherit_get_coords_midpoint($all);
-            $page_lat = $midpoint['latitude'];
-            $page_long = $midpoint['longitude'];
-            // var_dump($midpoint);
-            
-            $distance = unherit_get_coords_distance($all);
-            // var_dump($distance);
-            
-            $zooms = [270, 180, 120, 90, 45, 30, 0];
-            $zoom = 8;
-            for ($i = 0, $numZooms = count($zooms); $i < $numZooms; ++$i) {
-                if ($distance > $zooms[$i]) {
-                    $page_custom_zoom = $i;
-                    // echo "{$distance} > {$zooms[$i]}<br>";
-                    break;
-                }
-            }
-            // echo "{$zoom}<br>";
 
             $this->content = '';
             foreach( $all as $key => $item ) {
