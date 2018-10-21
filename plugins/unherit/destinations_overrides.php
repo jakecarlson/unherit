@@ -205,6 +205,121 @@ function destination_sub_navigation( $echo = true, $include_categories = true ) 
     return apply_filters('destination_sub_navigation', $sub_nav_items);
 }
 
+function get_destination_pages( $post_id = 0, $return = 'list', $lang = false ) {
+    // cache
+    $cache_key   = 'destination_pages_list';
+    $cache_group = $post_id . ( $lang ? '_' . $lang : '' );
+
+    if ( $return === 'list' && ! is_admin() ) {
+        $info = wp_cache_get( $cache_key, $cache_group );
+
+        if ( false !== $info ) {
+            return $info;
+        }
+    }
+    // -------------
+
+    $options  = get_option( get_travel_guide_option_key( 'travel_guide_options' ) );
+    $settings = $options ? json_decode( $options, true ) : array();
+    //$page_base = '';
+    if( $lang ) {
+        $options = get_option( get_travel_guide_option_key( 'travel_guide_options', $lang ) );
+        $settings_lang = $options ? json_decode( $options, true ) : array();
+    }
+
+    // Get child destinations
+    $children_query = unherit_get_places_query($post_id);
+    $place_ids = [];
+    $children = $children_query->posts;
+    foreach ($children as $child) {
+        $place_ids[] = $child->ID;
+    }
+    array_push($place_ids, $post_id);
+
+    $args = array(
+        'post_type' => get_pages_cpt( $post_id ),
+        'posts_per_page' => -1,
+        'meta_key' => 'guide_page_order',
+        'orderby' => 'meta_value_num',
+        'order' => 'ASC',
+        'suppress_filters' => $lang? 1 : 0,
+        'meta_query' => array(
+            array(
+                'key' => 'is_disabled_master_page',
+                'compare' => 'NOT EXISTS'
+            ),
+            array(
+                'key' => 'is_disabled_guide_page',
+                'compare' => 'NOT EXISTS'
+            ),
+            array(
+                'key' => 'destination_parent_id',
+                //'value' => $lang? (int)apply_filters( 'wpml_object_id', $post_id, 'destination', false, $lang ) : $post_id,
+                'value' => $place_ids,
+                'compare'  => 'IN',
+            )
+        )
+    );
+
+    if ($return == 'query')
+        return $args;
+
+    // Get the posts
+    remove_action( 'pre_get_posts', array( Destination_CPT::this(), 'sort_destinations_by_meta_value' ) );
+    $guide_pages = get_posts( $args );
+    add_action( 'pre_get_posts', array( Destination_CPT::this(), 'sort_destinations_by_meta_value' ) );
+
+    if ($return == 'posts')
+        return $guide_pages;
+
+    $items = get_page_hierarchy( $guide_pages );
+    $dest = get_post( $post_id );
+    $dest_name = create_parent_dest_slug( $dest, false );
+    $pages_slugs = get_guide_pages_slugs_new( $post_id );
+
+    $info = [];
+    $titles = [];
+    foreach( $items as $key => $item ) {
+        
+        $permalink = get_permalink($key); // '';
+        $title = get_the_title($key);
+        if (!in_array($title, $titles)) {
+
+            $titles[] = $title;
+            $info[$key]['id'] = $key;
+            $info[$key]['title'] = $title;
+            $info[$key]['link'] = $permalink;
+
+            if ( isset( $pages_slugs->$item ) ) {
+                $settings_page_base_lang = isset( $settings_lang['page_base'] ) ? $settings_lang['page_base'] : '';
+                $settings_page_base = isset( $settings['page_base'] ) ? $settings['page_base'] : '';
+                $info[$key]['link'] = get_final_permalink( 'destination-page', $pages_slugs->$item, $settings_page_base, $settings_page_base_lang, $lang );
+            }
+
+        }
+
+    }
+
+    // cache
+    if ( ! is_admin() ) {
+        wp_cache_set( $cache_key, $info, $cache_group );
+    }
+    // ------------
+
+    return $info;
+}
+
+function unherit_get_places_query($parent_id = null) {
+    $args = [
+        'post_type' => 'destination',
+        'post_parent' => $parent_id,
+        'posts_per_page' => -1,
+        'meta_key' => 'destination_order',
+        'orderby' => array('meta_value_num' => 'ASC', 'title' => 'ASC' ),
+    ];
+    return new WP_Query($args);
+}
+
 function unherit_get_map_pins($post_id = null) {
 
     if (is_null($post_id)) {
