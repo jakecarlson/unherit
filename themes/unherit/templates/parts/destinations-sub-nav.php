@@ -29,19 +29,6 @@
                     <span class="icon-bar"></span>
                 </button>
             </div>
-
-            <nav class="navbar-collapse collapse" id="navbar-sub">
-                <ul class="nav navbar-nav navbar-left">
-                    <?php //destination_sub_navigation(true, false); ?>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <!-- <li><a href="#"><i class="fa fa-fw fa-location-arrow"></i> Map</a></li> -->
-                    <!-- <li><a href="#" id="HeaderMapToggle"><i class="fa fa-fw fa-location-arrow"></i> Map</a></li> -->
-                    <?php if (function_exists('show_destination_map') && show_destination_map( get_the_ID())) { ?>
-                        <li><a href="#" id="HeaderMapToggle" data-toggle="tooltip" title="<?php _e('Toggle Map', 'framework') ?>"><i class="dest-icon-map-w-pin"></i>&nbsp; <?php _e('Map', 'framework') ?></a></li>
-                    <?php } ?>
-                </ul>
-            </nav>
         </div> <!-- /.container -->
     </div>
 </div><!-- /.sub-nav -->
