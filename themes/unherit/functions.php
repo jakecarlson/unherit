@@ -240,3 +240,84 @@ function unherit_output_site_meta($post_id = null, $show_rating = false) { ?>
     </div>
 <?php
 }
+
+function rf_theme_extra_header_classs( $classes ) {
+
+    $add_class = array();
+    $header_size = '';
+    $header_overlay = '';
+
+    // Home page class
+    if (is_front_page() || is_home()) {
+        $header_size = get_options_data('home-page', 'home-header-size', 'large'); // header size
+        $header_overlay = get_options_data('home-page', 'home-section-1-active', ''); // Overlay adjust? (example: featured destinations)
+        if ( get_option('show_on_front') == 'page' && (int) get_option('page_for_posts') === get_queried_object_ID() ) {
+            // doesn't apply for blog pages without featured destinations
+            $header_size = 'small';
+            $header_overlay = 'hide';
+        }
+        $add_class[] = get_options_data('home-page', 'home-header-class', ''); // custom class
+    // All other pages (defaults)
+    } else {
+        // Deafaults
+        $header_size = 'small';
+    }
+
+    $queried_object = get_queried_object();
+    $object_id = get_queried_object_id();
+    if(isset($queried_object->ID)) {                         // if post/page (not taxonomy)
+        // Header size in meta options
+        $meta_options = get_post_custom( $object_id );
+        if ( $object_id && isset($meta_options['theme_custom_layout_metabox_options_header_size']) ) {
+            $size_setting = $meta_options['theme_custom_layout_metabox_options_header_size'][0];
+
+            if ( isset($size_setting) && $size_setting !== 'default' && $size_setting !== 'none' ) {
+                $header_size = $size_setting;
+            }
+        }
+
+        // Header color in meta options
+        //$meta_options = get_post_custom( get_queried_object_id() );
+        if ( $object_id && isset($meta_options['theme_custom_layout_metabox_options_header_bg']) ) {
+            $bg_setting = $meta_options['theme_custom_layout_metabox_options_header_bg'][0];
+
+            if ( isset($bg_setting) && ($bg_setting == 'color-1' || $bg_setting == 'color-2' || $bg_setting == 'color-3') ) {
+                $header_color = $bg_setting;
+            }
+        }
+    }
+
+    // Destinations classes
+    if (is_singular('destination')) {
+        $header_size = 'large';
+    }
+
+    // Map's in header - show map by default
+    $dest_meta = get_post_meta( get_the_ID(), 'destination_options');
+    $destination_options = (empty($dest_meta[0])) ? '' : json_decode($dest_meta[0], true);
+    $show_on_load = ( isset($destination_options['google_map']['show_map_on_load']) ) ? trim($destination_options['google_map']['show_map_on_load']) : 'false';
+    if( get_post_type() == 'travel-directory' ) {
+        $show_on_load = show_directory_items_on_page_load( get_the_ID() );
+    }
+
+    // if (($show_on_load == 'true') || unherit_post_is_itinerary()) {
+        $add_class[] = 'mapOn';
+    // }
+
+    // Error checking
+    if (!empty($header_size)) {
+        $add_class[] = $header_size.'-hero';
+    }
+    if (!empty($header_color)) {
+        $add_class[] = $header_color;
+    }
+    if ($header_overlay == 'show') {
+        $add_class[] = 'hero-overlap';
+    }
+
+    // Formatting
+    array_filter($add_class); // Get rid of empty values
+    $classes .= implode(' ', $add_class); // make into a string
+
+    return $classes;
+}

@@ -963,6 +963,22 @@ class WHS_Importer_Admin {
             $this->partial('Setting map window ... ');
         }
         $sites = unherit_get_map_pins($post_id);
+        /*
+        $latitudes = array_map('floatval', array_column($sites, 'latitude'));
+        $longitudes = array_map('floatval', array_column($sites, 'longitude'));
+        $window_sites = [
+            [
+                'latitude' => min($latitudes),
+                'longitude' => min($longitudes),
+            ],
+            [
+                'latitude' => max($latitudes),
+                'longitude' => max($longitudes),
+            ]
+        ];
+        $coords = unherit_get_coords_midpoint($window_sites);
+        $zoom = unherit_get_map_zoom($window_sites);
+        */
         $coords = unherit_get_coords_midpoint($sites);
         $zoom = unherit_get_map_zoom($sites);
         $options = get_destination_options($post_id);
@@ -974,7 +990,7 @@ class WHS_Importer_Admin {
         $options['google_map']['zoom'] = $zoom;
         update_post_meta($post_id, 'destination_options', json_encode($options));
         if ($display_status) {
-            $this->success('OK');
+            $this->success("OK: {$coords['latitude']}, {$coords['longitude']}, {$zoom}");
         }
     }
 
