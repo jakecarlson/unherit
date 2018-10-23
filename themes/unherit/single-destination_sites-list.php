@@ -10,24 +10,25 @@ if (is_array($list) && !empty($list)) {
         $paged= $_GET['pagenum'];
     }
     $args = array(
-        'post_type'      => 'travel-directory',
-        'posts_per_page' => 10,
-        'post__in'       => $list,
-        'orderby'        => 'post__in',
-        'paged'          => $paged
+        'post_type'         => 'travel-directory',
+        'posts_per_page'    => 10,
+        'post__in'          => $list,
+        'orderby'           => 'post__in',
+        'suppress_filters'  => true,
+        'paged'             => $paged,
     );
-    $args = is_destination_paged( $args );
+    $args = is_destination_paged($args);
 }
 
 // The Query
-$the_query = new WP_Query( $args );
+$the_query = new WP_Query($args);
 
 // The Loop
-if ( $the_query->have_posts() ) {
+if ($the_query->have_posts()) {
 
     // for each post...
-    while ( $the_query->have_posts() ) : $the_query->the_post();
-        $item = get_post( get_the_ID() );
+    while ($the_query->have_posts()) : $the_query->the_post();
+        $item = get_post(get_the_ID());
         ?>
         <article class="media guide-list-item">
 
