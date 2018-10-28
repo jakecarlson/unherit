@@ -13,11 +13,14 @@ $settings = get_destination_settings();
 // Check for content sections
 $sub_nav_items = destination_sub_navigation(false); // only return
 
-if (isset($_GET['category'])) {
-    $guide_term = get_term_by('slug', $_GET['category'], 'travel-dir-category');
-    $term_id = $guide_term->term_id;
-} else {
-    $term_id = 0;
+$guide_terms = [];
+$term_ids = [];
+if (isset($_GET['categories'])) {
+	foreach ($_GET['categories'] as $slug) {
+		$term = get_term_by('slug', $slug, 'travel-dir-category');
+		$guide_terms[] = $term;
+		$term_ids[] = $term->term_id;
+	}
 }
 
 // The Query

@@ -122,7 +122,7 @@ function get_destination_intro( $post_ID = 0 ) {
     return $intro;
 }
 
-function get_guide_lists_by_category( $destination_id = 0, $category_id = 0, $return = 'posts' ) {
+function get_guide_lists_by_category( $destination_id = 0, $category_ids = [], $return = 'posts' ) {
 
     $options = get_destination_options($destination_id);
     $include_child_guide_lists = (isset($options['guide_lists']) && ($options['guide_lists'] == 'true'));
@@ -150,8 +150,8 @@ function get_guide_lists_by_category( $destination_id = 0, $category_id = 0, $re
         ),
 
     );
-    if ($category_id !== 0) {
-        add_directory_category_constraint($args, $category_id);
+    if (!empty($category_ids)) {
+        add_directory_category_constraint($args, $category_ids);
     }
 
     $posts = get_posts($args);
@@ -186,30 +186,6 @@ function get_guide_lists_by_category( $destination_id = 0, $category_id = 0, $re
         return $posts;
     }
 
-}
-
-function destination_sub_navigation( $echo = true, $include_categories = true ) {
-    global $post;
-
-    $sub_nav_items = array();
-    $sub_nav_links = get_sub_nav_links();
-    $id = get_the_destination_ID();
-
-    if (isset($id)) {
-        /*foreach($sub_nav_links as $key => $val) {
-            // Output the menu itmes
-            if (($val != 'directory') || $include_categories) {
-                $sub_nav_items[$val] = output_sub_menu_item( $id, $val, $echo );
-            }
-        }*/
-        foreach($sub_nav_links as $key => $val) {
-            // Output the menu itmes
-            $sub_nav_items[$val] = output_sub_menu_item( $id, $val, $echo );
-            // var_dump($sub_nav_items[$val]);
-        }
-    }
-
-    return apply_filters('destination_sub_navigation', $sub_nav_items);
 }
 
 function get_destination_pages( $post_id = 0, $return = 'list', $lang = false ) {
@@ -316,6 +292,93 @@ function get_destination_pages( $post_id = 0, $return = 'list', $lang = false ) 
     return $info;
 }
 
+function get_guide_lists_directory( $post_id = 0 ) {
+    global $post;
+
+    $post_id = ( $post_id == 0 )? $post->ID : $post_id;
+    $dest = get_post( $post_id );
+    $options = get_destination_options( $post_id );
+    $include_child_guide_lists = ( isset( $options['guide_lists'] ) && $options['guide_lists'] == 'true' ) ? true : false;
+
+    $all_child_destinations[] = $post_id;
+    if( $include_child_guide_lists ) {
+        $all_child_destinations = get_all_children( $post_id, $all_child_destinations );
+    }
+
+    $args = array(
+        'post_type' => 'travel-directory',
+        'posts_per_page' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+        'post_status' => array( 'publish' ),
+        'suppress_filters' => defined( 'ICL_LANGUAGE_CODE' )? 0 : 1,
+        'meta_query' => array(
+            array(
+                'key' => 'destination_parent_id',
+                'value' => $all_child_destinations,
+                'compare' => 'IN'
+            )
+        )
+    );
+    $guide_lists = get_posts( $args );
+
+    $directory = array();
+    $terms_unsorted = array();
+    $terms = array();
+    $images = array();
+    foreach( $guide_lists as $list ) {
+        $guides_terms = get_the_terms( $list->ID, 'travel-dir-category' );
+        if( $guides_terms ) {
+            foreach ($guides_terms as $category) {
+                if( in_array( $category->term_id, $terms ) === false ) {
+                    if( in_array( $category->term_id, $images ) === false && has_post_thumbnail( $list->ID ) )
+                        $images[] = $category->term_id;
+
+                    if ( ! property_exists( $category, 'object_id' ) ) {
+                        $category->object_id = $list->ID;
+                    }
+
+                    $terms_unsorted[] = $category;
+                    $first_post_id[] = $list->ID;
+                    $terms[] = $category->term_id;
+                }
+            }
+            
+        }
+    }
+
+    $terms_sorted = sort_directory_terms( $terms_unsorted );
+    foreach( $terms_sorted as $key => $term ) {
+        $directory[$term->term_id]['post_ID'] = $term->object_id;
+        $directory[$term->term_id]['name'] = $term->name;
+        $directory[$term->term_id]['slug'] = $term->slug;
+        $directory[$term->term_id]['link'] = trailingslashit(get_destination_taxonomy_term_links( $term->slug, $dest->post_name, 'travel-dir-category' ));
+        if( in_array( $term->term_id, $images ) ) {
+            $directory[$term->term_id]['image'] = get_post_thumbnail_id( $term->object_id );
+        }
+    }
+    return $directory;
+}
+
+// Add directory category constraint
+function add_directory_category_constraint(&$args, $category_ids = []) {
+    if (!empty($category_ids)) {
+        if (!is_numeric($category_ids[0])) {
+            foreach ($category_ids as $key=>$category_id) {
+                $term = get_term_by('slug', $category_id, 'travel-dir-category');
+                $category_ids[$key] = $term->term_id;
+            }
+        }
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'travel-dir-category',
+                'field'    => 'term_id',
+                'terms'    => $category_ids
+            )
+        );
+    }
+}
+
 function unherit_get_places_query($parent_id = null) {
     $args = [
         'post_type' => 'destination',
@@ -394,8 +457,8 @@ function unherit_get_map_pins($post_id = null) {
 }
 
 function unherit_query_map_posts($args) {
-    if (isset($_GET['category'])) {
-        add_directory_category_constraint($args, $_GET['category']);
+    if (isset($_GET['categories'])) {
+        add_directory_category_constraint($args, $_GET['categories']);
     }
     $items = get_posts($args);
     $pins = [];

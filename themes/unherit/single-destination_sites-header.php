@@ -6,7 +6,8 @@
 if (is_object($post)) {
 
     // Ratings Base URL
-    $sort_url = get_destination_taxonomy_term_links($term_id, $dest->post_name, 'travel-dir-category');
+    // $sort_url = get_destination_taxonomy_term_links($term_id, $dest->post_name, 'travel-dir-category');
+    $sort_url = $_SERVER['REQUEST_URI'];
     $rating = get_guide_lists_rating($post->ID);
 
     $sort_types = [

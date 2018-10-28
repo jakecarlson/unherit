@@ -4,17 +4,9 @@
 
 require_once('single-destination_setup.php');
 
-// The Query
-$args = array(
-    'post_type' => 'destination',
-    'post_parent' => $dest->ID, // $dest_ID,
-    'posts_per_page' => isset($settings['number_posts_child'])? $settings['number_posts_child'] : 2,
-    'meta_key' => 'destination_order',
-    'orderby' => array('meta_value_num' => 'ASC', 'title' => 'ASC' ),
-);
-$places_query = new WP_Query($args);
+$places_query = unherit_get_places_query($dest->ID);
 
-$list = get_guide_lists_by_category($dest->ID, $term_id, 'Sorted IDs'); // we're only returning a sorted list
+$list = get_guide_lists_by_category($dest->ID, $term_ids, 'Sorted IDs'); // we're only returning a sorted list
 ?>
 
 <main class="main">

@@ -197,9 +197,6 @@ add_action('posts_orderby', 'unherit_sort_by_title');
 function unherit_output_site_meta($post_id = null, $show_rating = false) { ?>
     <div class="media-details">
         <ul class="list-inline pull-left">
-            <?php if (unherit_in_category('visited', $post_id)) { ?>
-                <li><i class="fa fa-fw fa-check-square-o" title="<?php _e('Visited', 'framework') ?>"></i></li>
-            <?php } ?>
             <?php if (unherit_in_category('endangered', $post_id)) { ?>
                 <li><i class="fa fa-fw fa-warning" title="<?php _e('Endangered', 'framework') ?>"></i></li>
             <?php } ?>
@@ -208,6 +205,12 @@ function unherit_output_site_meta($post_id = null, $show_rating = false) { ?>
             <?php } ?>
             <?php if (unherit_in_category('natural', $post_id)) { ?>
                 <li><i class="fa fa-fw fa-leaf" title="<?php _e('Natural', 'framework') ?>"></i></li>
+            <?php } ?>
+            <?php if (unherit_in_category('visited', $post_id)) { ?>
+                <li><i class="fa fa-fw fa-check-circle" title="<?php _e('Visited', 'framework') ?>"></i></li>
+            <?php } ?>
+            <?php if (unherit_in_category('reviewed', $post_id)) { ?>
+                <li><i class="fa fa-fw fa-comment" title="<?php _e('Reviewed', 'framework') ?>"></i></li>
             <?php } ?>
         </ul>
         <ul class="list-inline pull-right">
@@ -234,6 +237,53 @@ function unherit_output_site_meta($post_id = null, $show_rating = false) { ?>
         </ul>
     </div>
 <?php
+}
+
+function destination_sub_navigation( $echo = true, $include_categories = true ) {
+    global $post;
+
+    $sub_nav_items = array();
+    $sub_nav_links = get_sub_nav_links();
+    $id = get_the_destination_ID();
+
+    if (isset($id)) {
+        foreach($sub_nav_links as $key => $val) {
+            $sub_nav_items[$val] = output_sub_menu_item($id, $val, $echo);
+        }
+    }
+
+    return apply_filters('destination_sub_navigation', $sub_nav_items);
+}
+
+function unherit_output_destination_filter($slug, $filters, $destination_url) { ?>
+    <?php 
+    $active = (isset($_GET['categories']) && in_array($slug, $_GET['categories'])); 
+    $show = false;
+    foreach ($filters as $filter) {
+        if ($filter['slug'] == $slug) {
+            $show = true;
+            break;
+        }
+    }
+    ?>
+    <?php if ($show) { ?>
+        <li>
+            <a href="<?= unherit_get_filter_url($slug, $active, $destination_url); ?>">
+                <i class="fa fa-<?= ($active) ? 'check-square' : 'square-o'; ?>"></i>
+                &nbsp;<?php esc_html_e($filter['name']); ?>
+            </a>
+        </li>
+    <?php } ?>
+<?php }
+
+function unherit_get_filter_url($slug, $active, $base_url) {
+    $categories = isset($_GET['categories']) ? $_GET['categories'] : [];
+    if ($active) {
+        $categories = array_diff($categories, [$slug]);
+    } else {
+        $categories = array_merge($categories, [$slug]);
+    }
+    return add_query_arg('categories', $categories, remove_query_arg('categories'));
 }
 
 function rf_theme_extra_header_classs( $classes ) {

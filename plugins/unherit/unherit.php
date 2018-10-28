@@ -54,23 +54,6 @@ function unherit_load_scripts_and_styles() {
     wp_enqueue_script('destination-maps', UNHERIT_PLUGIN_URL.'maps.js', array( 'jquery' ), '1.0', true);
 }
 
-// Add directory category constraint
-function add_directory_category_constraint(&$args, $category_id) {
-    if (isset($category_id)) {
-        if (!is_numeric($category_id)) {
-            $term = get_term_by('slug', $category_id, 'travel-dir-category');
-            $category_id = $term->term_id;
-        }
-        $args['tax_query'] = array(
-            array(
-                'taxonomy' => 'travel-dir-category',
-                'field'    => 'term_id',
-                'terms'    => $category_id
-            )
-        );
-    }
-}
-
 // Include Destinations plugin overrides
 require_once('directory.php');
 require_once('maps.php');
