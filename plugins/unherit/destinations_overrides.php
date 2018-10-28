@@ -124,20 +124,23 @@ function get_destination_intro( $post_ID = 0 ) {
 
 function get_guide_lists_by_category( $destination_id = 0, $category_id = 0, $return = 'posts' ) {
 
-    $options = get_destination_options( $destination_id );
-    $include_child_guide_lists = ( isset( $options['guide_lists'] ) && $options['guide_lists'] == 'true' )? true : false;
+    $options = get_destination_options($destination_id);
+    $include_child_guide_lists = (isset($options['guide_lists']) && ($options['guide_lists'] == 'true'));
 
     $all_child_destinations[] = $destination_id;
     if( $include_child_guide_lists ) {
-        $all_child_destinations = get_all_children( $destination_id, $all_child_destinations );
+        $all_child_destinations = get_all_children($destination_id, $all_child_destinations);
     }
+
+    $sort = isset($_GET['sort']) ? $_GET['sort'] : 'title';
+    $order = isset($_GET['order']) ? $_GET['order'] : 'asc';
 
     $args = array(
         'post_type' => 'travel-directory',
         'posts_per_page' => -1,
-        'post_status' => array( 'publish' ),
+        'post_status' => array('publish'),
         'orderby' => 'title',
-        'order' => 'ASC',
+        'order' => ($sort == 'title') ? $order : 'asc',
         'meta_query' => array(
             array(
                 'key' => 'destination_parent_id',
@@ -151,34 +154,38 @@ function get_guide_lists_by_category( $destination_id = 0, $category_id = 0, $re
         add_directory_category_constraint($args, $category_id);
     }
 
-    $lists = get_posts( $args );
+    $posts = get_posts($args);
 
-    $cat = isset( $_GET['cat'] ) ? $_GET['cat'] : 'star';
-    $order = isset( $_GET['order'] ) ? $_GET['order'] : 'desc';
-    $list = array();
-    foreach( $lists as $item ) {
-        $rating = get_meta_rating( $item->ID );
-        $list[$item->ID] = isset( $rating['rating_types_'.$cat] ) ? $rating['rating_types_'.$cat] : 0;
+    $id_map = [];
+    if ($sort != 'title') {
+        foreach ($posts as $item) {
+            $rating = get_meta_rating($item->ID);
+            $id_map[$item->ID] = isset($rating['rating_types_'.$sort]) ? $rating['rating_types_'.$sort] : 0;
+        }
+        if ($order == 'desc') {
+            arsort($id_map);
+        } else {
+            asort($id_map);
+        }
+    } else {
+        foreach ($posts as $item) {
+            $id_map[$item->ID] = 0;
+        }
     }
 
-    if( $order == 'desc' )
-        arsort( $list );
-    if( $order == 'asc' )
-        asort( $list );
-
-    if ( $return == 'Sorted IDs' ) {
-        return array_keys( $list );
+    if ($return == 'Sorted IDs') {
+        return array_keys($id_map);
+    } else {
+        if ($sort != 'title') {
+            $posts = [];
+            foreach ($id_map as $key => $item) {
+                $posts[] = get_post($key);
+            }
+        }
+        wp_reset_postdata();
+        return $posts;
     }
 
-    $posts_sorted = array();
-    foreach($list as $key => $item) {
-        $posts_sorted[] = get_post( $key );
-    }
-
-    /* Restore original Post Data */
-    wp_reset_postdata();
-
-    return $posts_sorted;
 }
 
 function destination_sub_navigation( $echo = true, $include_categories = true ) {
@@ -315,7 +322,7 @@ function unherit_get_places_query($parent_id = null) {
         'post_parent' => $parent_id,
         'posts_per_page' => -1,
         'meta_key' => 'destination_order',
-        'orderby' => array('meta_value_num' => 'ASC', 'title' => 'ASC' ),
+        'orderby' => ['meta_value_num'=>'ASC', 'title'=>'ASC'],
     ];
     return new WP_Query($args);
 }

@@ -188,11 +188,7 @@ function unherit_create_temp_title($fields) {
 }
 
 function unherit_sort_by_title($orderby) {
-  $custom_orderby = " UPPER(title2) ASC";
-  if ($custom_orderby) {
-    $orderby = $custom_orderby;
-  }
-  return $orderby;
+  return str_replace('wp_posts.post_title', 'UPPER(title2)', $orderby);
 }
 
 add_filter('posts_fields', 'unherit_create_temp_title');

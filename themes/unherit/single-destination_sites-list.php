@@ -14,7 +14,7 @@ if (is_array($list) && !empty($list)) {
         'posts_per_page'    => 10,
         'post__in'          => $list,
         'orderby'           => 'post__in',
-        'suppress_filters'  => true,
+        // 'suppress_filters'  => true,
         'paged'             => $paged,
     );
     $args = is_destination_paged($args);
