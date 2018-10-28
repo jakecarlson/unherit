@@ -15,7 +15,7 @@
 
 <?php if ($places_query->have_posts()) { ?>
     <aside class="widget">
-        <h3 class="widget-title"><?php _e('Countries', 'framework') ?></h3>
+        <h3 class="widget-title"><?php (!$dest->post_parent) ? _e('Continents', 'framework') : _e('Countries', 'framework') ?></h3>
         <ul class="nav nav-stacked">
             <?php while ($places_query->have_posts()) : $places_query->the_post(); ?>
                 <li <?php echo ($post->ID == $dest->ID)? 'class="active"' : ''; ?>><a href="<?= get_the_permalink(); ?>"><?= $post->post_title; ?></a></li>

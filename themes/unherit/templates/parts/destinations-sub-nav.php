@@ -13,9 +13,13 @@
             <div class="navbar-header">
                 <div class="navbar-brand">
                     <i class="fa fa-fw fa-map-marker"></i>
-                    <a href="<?= get_home_url(); ?>"><?php _e('World', 'framework' ) ?></a>
-                    <i class="fa fa-fw fa-angle-right"></i>
                     <?php if ($parent = get_the_destination_post()->post_parent) { ?>
+                        <?php $parent = get_post($parent); ?>
+                        <?php if ($grandparent = $parent->post_parent) { ?>
+                            <?php $grandparent = get_post($grandparent); ?>
+                            <a href="<?= get_the_permalink($grandparent->ID); ?>"><?= get_the_title($grandparent->ID); ?></a>
+                            <i class="fa fa-fw fa-angle-right"></i>
+                        <?php } ?>
                         <a href="<?= get_the_permalink($parent); ?>"><?= get_the_title($parent); ?></a>
                         <i class="fa fa-fw fa-angle-right"></i>
                     <?php } ?>

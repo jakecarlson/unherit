@@ -1,6 +1,11 @@
 <?php if (!empty($sub_nav_items['information'])) { ?>
     <aside class="widget">
-        <h3 class="widget-title"><?php _e('Itineraries', 'framework') ?></h3>
+        <h3 class="widget-title">
+            <?php if (!$dest->post_parent) { ?>
+                <?php _e('Transboundary', 'framework') ?>
+            <?php } ?>
+            <?php _e('Itineraries', 'framework') ?>        
+        </h3>
         <ul class="nav nav-stacked">
             <?php
             if (is_array($sub_nav_items['information']) && !empty($sub_nav_items['information'])) {
