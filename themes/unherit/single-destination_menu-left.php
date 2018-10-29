@@ -3,7 +3,7 @@
     <?php $filter_url = $_SERVER['REQUEST_URI']; ?>
 
     <?php if (isset($_GET['categories']) && !empty($_GET['categories'])) { ?>
-        <a href="<?= get_post_permalink($dest); ?>"><i class="fa fa-times"></i> &nbsp;<?php _e('Clear Filters', 'framework') ?></a><br><br>
+        <a href="<?= get_post_permalink($dest); ?>"><i class="fa fa-times"></i> &nbsp;<?php _e('clear filters', 'framework') ?></a><br><br>
     <?php } ?>
 
     <aside class="widget">

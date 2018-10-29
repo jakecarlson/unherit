@@ -328,7 +328,11 @@ function unherit_get_pagination_str($qry) {
         $end = $total;
     }
     $formatted_total = number_format($total);
-    return "{$start} - {$end} " . __('of', 'framework') . " {$formatted_total}";
+    $str = "{$start} - {$end} " . __('of', 'framework') . " {$formatted_total}";
+    if (isset($_GET['categories']) && !empty($_GET['categories'])) {
+        $str .= __(' (filtered)', 'framework');
+    }
+    return $str;
 }
 
 function rf_theme_extra_header_classs( $classes ) {
