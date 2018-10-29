@@ -1,6 +1,7 @@
-<?php if (isset($guide_term)) { ?>
-    <h2 class="pull-left page-title travel-dir-category-title"><?php esc_html_e($guide_term->name); ?></h2>
-<?php } ?>
+<h2 class="pull-left unherit-sites-list-title">
+    <?= __('Sites in ', 'framework') . get_the_title($dest); ?>
+    <span><?= unherit_get_pagination_str($posts_query); ?></span>        
+</h2>
 
 <?php
 if (is_object($post)) {
@@ -35,7 +36,7 @@ if (is_object($post)) {
     $sort_title = (isset($sort_types[$sort_title_type][$sort_title_order])) ? $sort_types[$sort_title_type][$sort_title_order] : '<div style="width:90px">&nbsp;</div>';
     ?>
 
-    <div class="pull-right navbar-right filter-listing">
+    <div class="pull-right navbar-right filter-listing unherit-filter-listing">
         <span><?php _e('Sort by', 'framework') ?> </span>
         <div class="btn-group">
             <button type="button" class="btn btn-default btn-sm"><?php echo $sort_title; // escaped above ?></button>

@@ -1,33 +1,10 @@
 <?php
-$args = array();
-
-// Make sure we have values in the array
-/* It's important that we do this test. An empty array using 'posts__in' will return ALL post results. */
-if (is_array($list) && !empty($list)) {
-    if (!isset($_GET['pagenum'])) {
-        $paged = 1;
-    } else {
-        $paged= $_GET['pagenum'];
-    }
-    $args = array(
-        'post_type'         => 'travel-directory',
-        'posts_per_page'    => 10,
-        'post__in'          => $list,
-        'orderby'           => 'post__in',
-        // 'suppress_filters'  => true,
-        'paged'             => $paged,
-    );
-    $args = is_destination_paged($args);
-}
-
-// The Query
-$the_query = new WP_Query($args);
 
 // The Loop
-if ($the_query->have_posts()) {
+if ($posts_query->have_posts()) {
 
     // for each post...
-    while ($the_query->have_posts()) : $the_query->the_post();
+    while ($posts_query->have_posts()) : $posts_query->the_post();
         $item = get_post(get_the_ID());
         ?>
         <article class="media guide-list-item">
@@ -70,7 +47,7 @@ if ($the_query->have_posts()) {
 
 
     // Paging function
-    unherit_get_pagination($the_query);
+    unherit_get_pagination($posts_query);
 
 } else {
     get_template_part( 'no-results', 'travel-dir-category' );

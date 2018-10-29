@@ -3,10 +3,6 @@
 // -------------------------------------------------
 
 require_once('single-destination_setup.php');
-
-$places_query = unherit_get_places_query($dest->ID);
-
-$list = get_guide_lists_by_category($dest->ID, $term_ids, 'Sorted IDs'); // we're only returning a sorted list
 ?>
 
 <main class="main">

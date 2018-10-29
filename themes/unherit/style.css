@@ -33,6 +33,10 @@ ul.nav-stacked {
 	border-right: none;
 }
 
+.unherit-filter-listing {
+  margin-top: .5rem;
+}
+
 .unherit-menu-sites > li {
 	margin-top: 0 !important;
 	clear: both;
@@ -50,4 +54,16 @@ ul.nav-stacked {
   content: "";
   display: table;
   clear: both;
+}
+
+.unherit-sites-list-title {
+  font-size: 2.5rem;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.unherit-sites-list-title span {
+  display: block;
+  font-size: 1.9rem;
+  margin-top: .75rem;
+  font-weight: normal;
 }

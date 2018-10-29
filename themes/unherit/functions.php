@@ -255,6 +255,38 @@ function destination_sub_navigation( $echo = true, $include_categories = true ) 
     return apply_filters('destination_sub_navigation', $sub_nav_items);
 }
 
+function unherit_get_sorted_post_ids($destination_id) {
+    $term_ids = [];
+    if (isset($_GET['categories'])) {
+        foreach ($_GET['categories'] as $slug) {
+            $term = get_term_by('slug', $slug, 'travel-dir-category');
+            $term_ids[] = $term->term_id;
+        }
+    }
+    return get_guide_lists_by_category($destination_id, $term_ids, 'Sorted IDs');
+}
+
+function unherit_get_posts_query($destination_id) {
+    $args = [
+        'post_type'         => 'travel-directory',
+        'posts_per_page'    => 10,
+        'orderby'           => 'title',
+    ];
+    $post_ids = unherit_get_sorted_post_ids($destination_id);
+    if (is_array($post_ids) && !empty($post_ids)) {
+        if (!isset($_GET['pagenum'])) {
+            $paged = 1;
+        } else {
+            $paged = $_GET['pagenum'];
+        }
+        $args['post__in'] = $post_ids;
+        $args['orderby'] = 'post__in';
+        $args['paged'] = $paged;
+        $args = is_destination_paged($args);
+    }
+    return new WP_Query($args);
+}
+
 function unherit_output_destination_filter($slug, $filters, $destination_url) { ?>
     <?php 
     $active = (isset($_GET['categories']) && in_array($slug, $_GET['categories'])); 
@@ -284,6 +316,18 @@ function unherit_get_filter_url($slug, $active, $base_url) {
         $categories = array_merge($categories, [$slug]);
     }
     return add_query_arg('categories', $categories, remove_query_arg('categories'));
+}
+
+function unherit_get_pagination_str($qry) {
+    $total = intval($qry->found_posts);
+    $page_size = $qry->query['posts_per_page'];
+    $page_num = $qry->query['paged'];
+    $start = (($page_num - 1) * $page_size) + 1;
+    $end = $page_num * $page_size;
+    if ($end > $total) {
+        $end = $total;
+    }
+    return "{$start} - {$end} of {$total}";
 }
 
 function rf_theme_extra_header_classs( $classes ) {

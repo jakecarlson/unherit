@@ -122,7 +122,7 @@ function get_destination_intro( $post_ID = 0 ) {
     return $intro;
 }
 
-function get_guide_lists_by_category( $destination_id = 0, $category_ids = [], $return = 'posts' ) {
+function get_guide_lists_by_category($destination_id = 0, $category_ids = [], $return = 'posts') {
 
     $options = get_destination_options($destination_id);
     $include_child_guide_lists = (isset($options['guide_lists']) && ($options['guide_lists'] == 'true'));
