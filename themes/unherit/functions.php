@@ -327,7 +327,8 @@ function unherit_get_pagination_str($qry) {
     if ($end > $total) {
         $end = $total;
     }
-    return "{$start} - {$end} of {$total}";
+    $formatted_total = number_format($total);
+    return "{$start} - {$end} " . __('of', 'framework') . " {$formatted_total}";
 }
 
 function rf_theme_extra_header_classs( $classes ) {

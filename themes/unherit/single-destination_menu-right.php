@@ -1,17 +1,12 @@
 <?php if (!empty($sub_nav_items['information'])) { ?>
     <aside class="widget">
-        <h3 class="widget-title">
-            <?php if (!$dest->post_parent) { ?>
-                <?php _e('Transboundary', 'framework') ?>
-            <?php } ?>
-            <?php _e('Itineraries', 'framework') ?>        
-        </h3>
+        <h3 class="widget-title"><?php _e('Itineraries', 'framework') ?></h3>
         <ul class="nav nav-stacked">
             <?php
             if (is_array($sub_nav_items['information']) && !empty($sub_nav_items['information'])) {
                 foreach($sub_nav_items['information'] as $key => $itinerary):
                     ?>
-                    <li <?php if ($original_post->ID == $itinerary['id']) { ?>class="active"<?php } ?>><a href="<?= esc_url($itinerary['link']); ?>"><?php echo esc_attr($itinerary['title']); ?></a></li>
+                    <li <?php if ($post->ID == $itinerary['id']) { ?>class="active"<?php } ?>><a href="<?= esc_url($itinerary['link']); ?>"><?php echo esc_attr($itinerary['title']); ?></a></li>
                     <?php
                 endforeach;
             }?>
@@ -34,7 +29,7 @@
 	        </h3>
 	        <ul class="nav nav-stacked <?php if (unherit_post_is_itinerary()) { ?>unherit-menu-sites<?php } ?>">
 	            <?php foreach ($sites as $site) { ?>
-	            	<li <?php if ($original_post->ID == $site['id']) { ?>class="active"<?php } ?>>
+	            	<li <?php if ($post->ID == $site['id']) { ?>class="active"<?php } ?>>
                         <a href="<?= esc_url($site['permalink']); ?>">
                             <?php echo esc_attr($site['title']); ?>
                             <?php 

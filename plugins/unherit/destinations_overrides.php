@@ -204,7 +204,6 @@ function get_destination_pages( $post_id = 0, $return = 'list', $lang = false ) 
 
     $options  = get_option( get_travel_guide_option_key( 'travel_guide_options' ) );
     $settings = $options ? json_decode( $options, true ) : array();
-    //$page_base = '';
     if( $lang ) {
         $options = get_option( get_travel_guide_option_key( 'travel_guide_options', $lang ) );
         $settings_lang = $options ? json_decode( $options, true ) : array();
@@ -216,14 +215,20 @@ function get_destination_pages( $post_id = 0, $return = 'list', $lang = false ) 
     $children = $children_query->posts;
     foreach ($children as $child) {
         $place_ids[] = $child->ID;
+        $grandchildren_query = unherit_get_places_query($child->ID);
+        $granchildren = $grandchildren_query->posts;
+        foreach ($granchildren as $grandchild) {
+            $place_ids[] = $grandchild->ID;
+        }
     }
     array_push($place_ids, $post_id);
 
     $args = array(
         'post_type' => get_pages_cpt( $post_id ),
         'posts_per_page' => -1,
-        'meta_key' => 'guide_page_order',
-        'orderby' => 'meta_value_num',
+        // 'meta_key' => 'guide_page_order',
+        // 'orderby' => 'meta_value_num',
+        'orderby' => 'title',
         'order' => 'ASC',
         'suppress_filters' => $lang? 1 : 0,
         'meta_query' => array(
@@ -237,7 +242,6 @@ function get_destination_pages( $post_id = 0, $return = 'list', $lang = false ) 
             ),
             array(
                 'key' => 'destination_parent_id',
-                //'value' => $lang? (int)apply_filters( 'wpml_object_id', $post_id, 'destination', false, $lang ) : $post_id,
                 'value' => $place_ids,
                 'compare'  => 'IN',
             )
@@ -266,14 +270,14 @@ function get_destination_pages( $post_id = 0, $return = 'list', $lang = false ) 
         
         $permalink = get_permalink($key); // '';
         $title = get_the_title($key);
-        if (!in_array($title, $titles)) {
+        if (!in_array($title, $titles) && !empty($permalink)) {
 
             $titles[] = $title;
             $info[$key]['id'] = $key;
             $info[$key]['title'] = $title;
             $info[$key]['link'] = $permalink;
 
-            if ( isset( $pages_slugs->$item ) ) {
+            if (isset($pages_slugs->$item)) {
                 $settings_page_base_lang = isset( $settings_lang['page_base'] ) ? $settings_lang['page_base'] : '';
                 $settings_page_base = isset( $settings['page_base'] ) ? $settings['page_base'] : '';
                 $info[$key]['link'] = get_final_permalink( 'destination-page', $pages_slugs->$item, $settings_page_base, $settings_page_base_lang, $lang );
