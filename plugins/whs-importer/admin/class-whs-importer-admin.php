@@ -979,18 +979,18 @@ class WHS_Importer_Admin {
         $coords = unherit_get_coords_midpoint($window_sites);
         $zoom = unherit_get_map_zoom($window_sites);
         */
-        $coords = unherit_get_coords_midpoint($sites);
+        $midpoint = unherit_get_coords_midpoint($sites);
         $zoom = unherit_get_map_zoom($sites);
         $options = get_destination_options($post_id);
         if (!isset($options['google_map'])) {
             $options['google_map'] = [];
         }
-        $options['google_map']['latitude'] = $coords['latitude'];
-        $options['google_map']['longitude'] = $coords['longitude'];
+        $options['google_map']['latitude'] = $midpoint['latitude'];
+        $options['google_map']['longitude'] = $midpoint['longitude'];
         $options['google_map']['zoom'] = $zoom;
         update_post_meta($post_id, 'destination_options', json_encode($options));
         if ($display_status) {
-            $this->success("OK: {$coords['latitude']}, {$coords['longitude']}, {$zoom}");
+            $this->success("OK: {$midpoint['latitude']}, {$midpoint['longitude']}, {$zoom}");
         }
     }
 

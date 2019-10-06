@@ -1,5 +1,7 @@
 <?php
 
+add_post_type_support('destination-page', 'custom-fields');
+
 // Make sure destination directory maps display correctly
 add_filter('destination_id_for_maps', 'unherit_set_destination_id_for_maps');
 function unherit_set_destination_id_for_maps($post_id = 0) {
@@ -516,11 +518,13 @@ function unherit_get_coords_midpoint($data)
 
 function unherit_get_map_zoom($coords) {
     $distance = unherit_get_coords_distance($coords);
-    $zooms = [270, 180, 120, 90, 45, 30, 0];
-    $zoom = 8;
+    $zooms = [45, 90, 135, 180, 225, 270, 315, 360];
     for ($i = 0, $numZooms = count($zooms); $i < $numZooms; ++$i) {
-        if ($distance > $zooms[$i]) {
-            $zoom = $i;
+        if (
+            ($distance['latitude'] < $zooms[$i]) ||
+            (($distance['longitude'] / 1.5) < $zooms[$i])
+        ) {
+            $zoom = $i + 2;
             break;
         }
     }
@@ -532,18 +536,10 @@ function unherit_get_coords_distance($coords) {
     $lats = array_column($coords, 'latitude');
     $lons = array_column($coords, 'longitude');
 
-    $lat_min = min($lats);
-    $lat_max = max($lats);
-    $lon_min = min($lons);
-    $lon_max = max($lons);
-
-    // echo "Lat: {$lat_min}, {$lat_max}<br>";
-    // echo "Lon: {$lon_min}, {$lon_max}<br>";
-    
-    $theta = $lon_max - $lon_min;
-    $dist = sin(deg2rad($lat_max)) * sin(deg2rad($lat_min)) +  cos(deg2rad($lat_max)) * cos(deg2rad($lat_min)) * cos(deg2rad($theta));
-    $dist = acos($dist);
-    $dist = rad2deg($dist);
+    $dist = [
+        'latitude'  =>  max($lats) - min($lats),
+        'longitude' =>  max($lons) - min($lons),
+    ];
 
     return $dist;
 
