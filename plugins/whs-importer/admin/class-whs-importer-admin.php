@@ -221,6 +221,32 @@ class WHS_Importer_Admin {
         include_once 'partials/whs-importer-maps-display.php';
     }
 
+    /**
+     * Add an options page under the Settings submenu
+     *
+     * @since  1.0.0
+     */
+    public function add_images_page() {
+
+        $this->plugin_screen_hook_suffix = add_management_page(
+            __( 'Update Location Images', 'whs-importer' ),
+            __( 'Update Location Images', 'whs-importer' ),
+            'import',
+            $this->plugin_name . '-images',
+            array( $this, 'display_images_page' )
+        );
+
+    }
+
+    /**
+     * Render the import page for plugin
+     *
+     * @since  1.0.0
+     */
+    public function display_images_page() {
+        include_once 'partials/whs-importer-images-display.php';
+    }
+
     /*
     |--------------------------------------------------------------------------
     | World Heritage Sites
@@ -963,22 +989,6 @@ class WHS_Importer_Admin {
             $this->partial('Setting map window ... ');
         }
         $sites = unherit_get_map_pins($post_id);
-        /*
-        $latitudes = array_map('floatval', array_column($sites, 'latitude'));
-        $longitudes = array_map('floatval', array_column($sites, 'longitude'));
-        $window_sites = [
-            [
-                'latitude' => min($latitudes),
-                'longitude' => min($longitudes),
-            ],
-            [
-                'latitude' => max($latitudes),
-                'longitude' => max($longitudes),
-            ]
-        ];
-        $coords = unherit_get_coords_midpoint($window_sites);
-        $zoom = unherit_get_map_zoom($window_sites);
-        */
         $midpoint = unherit_get_coords_midpoint($sites);
         $zoom = unherit_get_map_zoom($sites);
         $options = get_destination_options($post_id);
@@ -1008,6 +1018,73 @@ class WHS_Importer_Admin {
                 $this->update_map_window($itinerary->ID, false);
                 $this->success('OK');
             }
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Location Images
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Update Location Images
+     *
+     * @return void
+     */
+    public function update_location_images() {
+
+        $continents = $this->get_destinations();
+
+        foreach ($continents as $continent) {
+
+            $this->header($continent->post_title);
+            $this->update_location_image($continent->ID);
+            $this->update_itinerary_images($continent->ID);
+
+            $countries = $this->get_destinations($continent->ID);
+            foreach ($countries as $country) {
+                $this->subheader($country->post_title);
+                $this->update_location_image($country->ID);
+                $this->update_itinerary_images($country->ID);
+            }
+
+        }
+
+    }
+
+    /**
+     * Update all itinerary images for passed destination
+     *
+     * @return void
+     */
+    private function update_itinerary_images($post_id) {
+        $itineraries = $this->get_itineraries($post_id);
+        if (!empty($itineraries)) {
+            $this->line('Itineraries:');
+            foreach ($itineraries as $itinerary) {
+                $this->partial('&nbsp;&nbsp;&nbsp;&nbsp;- ' . $itinerary->post_title . ' ... ');
+                $this->update_location_image($itinerary->ID, false);
+                $this->success('OK');
+            }
+        }
+    }
+
+    /**
+     * Update location image
+     *
+     * @return void
+     */
+    private function update_location_image($post_id, $display_status = true) {
+        if ($display_status) {
+            $this->partial('Setting location image ... ');
+        }
+        $sites = get_guide_lists_directory($post_id);
+        $images = array_column($sites, 'image');
+        $thumbnail_id = $images[array_rand($images)];
+        $updated = set_post_thumbnail($post_id, $thumbnail_id);
+        if ($updated) {
+            $this->success("OK: {$thumbnail_id}");
         }
     }
 
