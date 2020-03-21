@@ -31,8 +31,8 @@ class WHS_Importer_SiteImporter extends WHS_Importer_ImporterBase {
     /**
      * @var string $feed_url
      */
-//	private $feed_url = 'http://whc.unesco.org/en/list/xml';
-    private $feed_url = '../whs.xml';
+	private $feed_url = 'http://whc.unesco.org/en/list/xml';
+//    private $feed_url = '../whs.xml';
 
     /**
      * @var int
